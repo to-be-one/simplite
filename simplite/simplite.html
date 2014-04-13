@@ -40,6 +40,11 @@
 </style>
 </head>
 <body>
+<script type="text/html" id="subTemplate2">
+<div>
+	哈哈哈哈哈哈啊哈哈哈哈
+</div>
+</script>
 <script type="text/html" id="subTemplate">
 <div>
 	欢迎您浏览Simplite模板引擎，此模板特点如下：
@@ -80,7 +85,6 @@
 		Simplite.closeTag<br />
 		Simplite.escapeHTML<br />
 		Simplite.getTemplate<br />
-		Simplite.trimTemplate<br />
 		Simplite.include<br />
 		Simplite.compile<br />
 		Simplite.toHtml<br />
@@ -91,12 +95,17 @@
 </script>
 <div id="tableDiv"></div>
 <script type="text/html" id="tableTeplate">
-	<%include(subTemplate)%>
+	<%
+	include(subTemplate);
+	//动态条件导入模板
+	if(true) {include(subTemplate2);}
+	%>
 	<table class='grid'>
 		<thead>
 			<tr>
 				<%var tr=thead.tr%>
-				<%for ( var i = 0; i < tr.length; i++ ) {%>
+				<%for ( var i = 0; i < tr.length; i++ ) {    
+				%>
 					<th><%=tr[i]%></th>
 				<%}%>
 			</tr>
@@ -107,7 +116,8 @@
 					<tr>
 						<%var tr=trs[i];%>
 						<%for ( var j = 0; j < tr.length; j++ ) {%>
-							<td><%=tr[j]%></td>
+							<td>
+							<%=tr[j]%></td>
 						<%}%>
 					</tr>
 				<%}%>

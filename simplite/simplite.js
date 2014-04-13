@@ -6,7 +6,6 @@
 */
 var Simplite = function (){
 	var templateCache = {};
-	var lineCommentsReg = /(['"])?[^'"]*\/\/[^\n]*(\1)?[^'"]*(?:\n|$)/g;//此正则只能处理简单的单行注释或者排除字符串中的//，不能处理复杂情况。
 	var toString = Object.prototype.toString;
 	var isType = function (type) {
 		return function (target) {
@@ -58,28 +57,14 @@ var Simplite = function (){
 			return htmlMeta[ch];
 		});
 	};
-	var trimTemplate = function (text) {
-		return text.replace(/\s+/g, ' ');
-	};
-	var trim = function (str) {
-		return str.replace(/^\s+|\s+$/, '');
-	};
-	var trimLineComment = function (text) {
-		return text.replace(lineCommentsReg, function (all, quote){
-			if (!quote) return '';
-			return all;
-		});
-	};
 	var parseOpenTag = function (text) {
 		return text.split(Simplite.openTag);
 	};
 	var parseCloseTag = function (segment) {
 		return segment.split(Simplite.closeTag);
 	};
-	var parser = function (text) {
+	var parse = function (text) {
 		var out = 'var out = "";';
-		text = trimLineComment(text);
-		text = trimTemplate(text);
 		var segments = parseOpenTag(text);
 		for (var i=0,len=segments.length; i<len; i++) {
 			var segment = segments[i];
@@ -90,25 +75,23 @@ var Simplite = function (){
 				html = js;
 				js = '';
 			}
-			js = trim(js);
-			if (/^=(.)/.test(js)) {
+			if (/^=\s*(.)/.test(js)) {
 				if(RegExp.$1 === '#'){
 					js = 'out += Simplite.escapeHTML(' + js.substr(2) + ');';
 				} else {
 					js = 'out += ' + js.substr(1) + ';';
 				}
-			} else if (/^include\s*\(([^\)]+)\)$/.test(js)) {
-				var args = RegExp.$1;
+			}
+			js = js.replace(/(\W)?(include\s*\(([^\)]+)\))/g, function(all, pre, include, args){
 				if(args.indexOf(',') < 0){//不应该有第一个字符为“,”的情况。
 					args = args + ',_this';
 				}
-				js = 'out += Simplite.include(' + args + ');';
-			}
-			if (/[^\{;]$/.test(js)) {
+				return (pre || '') + 'out += Simplite.include(' + args + ')';
+			});
+			if (/[^\{;]\s*$/.test(js)) {
 				js += '\n';
 			}
 			out += js;
-			html = trim(html);
 			if (html) {
 				out += 'out += ' + stringify(html) + ';';
 			}
@@ -118,7 +101,7 @@ var Simplite = function (){
 	var compile = function (template) {
 		var dataLoader = templateCache[template];
 		if (!dataLoader) {
-			var code = parser(template);
+			var code = parse(template);
 			dataLoader = templateCache[template] = new Function ('obj', 'with (obj) {var _this = obj;' + code + '; return out;}');
 		}
 		return dataLoader;
@@ -152,7 +135,6 @@ var Simplite = function (){
 	Simplite.closeTag = '%>';
 	Simplite.escapeHTML = escapeHTML;
 	Simplite.getTemplate = getTemplate;
-	Simplite.trimTemplate = trimTemplate;
 	Simplite.include = include;
 	Simplite.compile = compile;
 	Simplite.toHtml = toHtml;
