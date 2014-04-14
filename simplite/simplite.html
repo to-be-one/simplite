@@ -42,7 +42,12 @@
 <body>
 <script type="text/html" id="subTemplate2">
 <div>
-	哈哈哈哈哈哈啊哈哈哈哈
+	此内容为动态导入的值，dateTime：<%=_this%>
+</div>
+</script>
+<script type="text/html" id="subTemplate3">
+<div>
+	不满足动态导入的时间，dateTime：<%=_this%>
 </div>
 </script>
 <script type="text/html" id="subTemplate">
@@ -63,6 +68,7 @@
 	7. 模板可以使用_this来获取传入的数据。<br />
 	8. 支持面向对象方式与静态方式的使用。<br />
 	9. 面向对象方式支持实现beforerender和afterrender接口，来监听对应的事件。<br />
+	10. 任意位置导入模板，支持动态条件导入模板，支持调用作用域内的任何函数。<br />
 </pre>
 </script>
 <script type="text/html" id="subSubTemplate1">
@@ -98,13 +104,15 @@
 	<%
 	include(subTemplate);
 	//动态条件导入模板
-	if(true) {include(subTemplate2);}
+	var time = new Date().getTime();//include('subTemplate2') ;
+	if(time % 2) {include(subTemplate2, time);}
+	else include(subTemplate3, time);
 	%>
 	<table class='grid'>
 		<thead>
 			<tr>
 				<%var tr=thead.tr%>
-				<%for ( var i = 0; i < tr.length; i++ ) {    
+				<%for ( var i = 0; i < tr.length; i++ ) {
 				%>
 					<th><%=tr[i]%></th>
 				<%}%>
