@@ -144,7 +144,8 @@ var Simplite = function (){
 		var dataLoader = templateCache[template];
 		if (!dataLoader) {
 			var code = parse(template);
-			dataLoader = templateCache[template] = new Function ('obj', 'with (obj) {var _this = obj;' + code + '; return out;}');
+			dataLoader = templateCache[template] = new Function ('obj',
+			    'with (obj) {var _this = obj;' + code + '; return out;}');
 		}
 		return dataLoader;
 	};
