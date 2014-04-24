@@ -114,7 +114,7 @@ var Simplite = function() {
      * @private param {string} html 可能包含自定义属性标签的html片段
      * @return {string} 返回解析好的js代码段
      */
-    var normalHandler = function (js, html) {
+    var logicHandler = function (js, html) {
         var out = '';
         if (/^=\s*(.)/.test(js)) { // 是否是获取数据
             if (RegExp.$1 === '#') { // 此数据需要html转义
@@ -140,7 +140,7 @@ var Simplite = function() {
             if (Simplite.attrOpenTag !== Simplite.logicOpenTag
                 && Simplite.attrCloseTag !== Simplite.logicCloseTag
             ) {
-                out += dealTag(html, Simplite.attrOpenTag,
+                out += parse2Block(html, Simplite.attrOpenTag,
                     Simplite.attrCloseTag, customAttrHandler);
             } else {
                 out += 'out += ' + stringify(html) + ';';
@@ -156,7 +156,7 @@ var Simplite = function() {
      * @private param {function} hanlder 具体根据解析生成语句段的处理器
      * @return {string} 返回解析好的js代码段
      */
-    var dealTag = function (text, openTag, closeTag, hanlder) {
+    var parse2Block = function (text, openTag, closeTag, hanlder) {
         var out = '';
         var segments = parseOpenTag(text, openTag);
         for (var i = 0, len = segments.length; i < len; i++) {
@@ -178,8 +178,8 @@ var Simplite = function() {
      * @return {string} 返回根据html模板转换为可运行js的字符串形式
      */
     var parse = function(text) {
-        return  'var out = "";' + dealTag(text, Simplite.logicOpenTag,
-            Simplite.logicCloseTag, normalHandler);
+        return  'var out = "";' + parse2Block(text, Simplite.logicOpenTag,
+            Simplite.logicCloseTag, logicHandler);
     };
     /**
      * html模板编译
