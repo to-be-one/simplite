@@ -3,61 +3,63 @@
 <head>
 <meta charset="UTF-8" />
 <style>
-	.grid {
-		font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
-		font-size: 14px;
-		line-height: 1.42857;
-		color: #333333;
-		border-collapse: collapse;
-		border-spacing: 0;
-		table-layout: fixed;
-		width:100%;
-	}
-	.trid tr{
-		line-height: 1.42857;
-	}
-	.grid th{
-		border: 1px solid #dddddd;
-		padding: 8px;
-		line-height: 1.42857;
-		white-space: nowrap;
-	}
-	.grid td{
-		padding: 8px;
-		line-height: 1.42857;
-		vertical-align: top;
-		border: 1px solid #dddddd;
-		border-top: 1px solid #dddddd;
-		white-space: nowrap;
-	}
-	.ellipsis {
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
+.grid {
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    font-size: 14px;
+    line-height: 1.42857;
+    color: #333333;
+    border-collapse: collapse;
+    border-spacing: 0;
+    table-layout: fixed;
+    width: 100%;
+}
 
-	
+.trid tr {
+    line-height: 1.42857;
+}
+
+.grid th {
+    border: 1px solid #dddddd;
+    padding: 8px;
+    line-height: 1.42857;
+    white-space: nowrap;
+}
+
+.grid td {
+    padding: 8px;
+    line-height: 1.42857;
+    vertical-align: top;
+    border: 1px solid #dddddd;
+    border-top: 1px solid #dddddd;
+    white-space: nowrap;
+}
+
+.ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 </style>
 </head>
 <body>
-<script type="text/html" id="subTemplate2">
+    <script type="text/html" id="subTemplate2">
 <div>
 	此内容为动态导入的值，dateTime：<%=_this%>
 </div>
 </script>
-<script type="text/html" id="subTemplate3">
+    <script type="text/html" id="subTemplate3">
 <div>
 	不满足动态导入的时间，dateTime：<%=_this%>
 </div>
 </script>
-<script type="text/html" id="subTemplate">
+    <script type="text/html" id="subTemplate">
 <div>
 	欢迎您浏览Simplite模板引擎，此模板特点如下：
 	<%include(subSubTemplate)%>
 	<%include(subSubTemplate1)%>
 </div>
 </script>
-<script type="text/html" id="subSubTemplate">
+    <script type="text/html" id="subSubTemplate">
 <pre>
 	1. 代码量小，加载文件自然就快；阅读代码成本肯定会低。<br />
 	2. 符合jsp模板语法特点，使用成本低。<br />
@@ -71,7 +73,7 @@
 	10. 任意位置导入模板，支持动态条件导入模板，支持调用作用域内的任何函数。<br />
 </pre>
 </script>
-<script type="text/html" id="subSubTemplate1">
+    <script type="text/html" id="subSubTemplate1">
 <pre>
 	使用方式：<br />
 		var tableTeplate = new Simplite({
@@ -99,8 +101,8 @@
 		使用&lt;%for () {%&gt;写逻辑语句，使用&lt;%=abc%&gt;来设置属性的值（不对HTML转码），使用&lt;%=#abc%&gt;来设置属性的值（对HTML转码）
 </pre>
 </script>
-<div id="tableDiv"></div>
-<script type="text/html" id="tableTeplate">
+    <div id="tableDiv"></div>
+    <script type="text/html" id="tableTeplate">
 	<%
 	include(subTemplate);
 	//动态条件导入模板
@@ -132,32 +134,30 @@
 		</tbody>
 	</table>
 </script>
-<script src="simplite.js"></script>
-<script>
-	var tableData = {
-		thead:{
-			tr:['ID', '姓名', '年龄']
-		},
-		tbody:{
-			tr:[
-				['1', '张三', '20'],
-				['2', '张三', '30'],
-				['3', '张三', '24'],
-				['4', '张三', '27'],
-				['5', '张三', '21'],
-				['6', '张三', '23'],
-				['7', '张三', '22'],
-				['8', '张三', '26']
-			]
-		}
-	}
-	var tableTeplate = new Simplite({
-		target: 'tableDiv',
-		template: 'tableTeplate'
-	});
-	tableTeplate.beforerender = function(data){console.log(data)};
-	tableTeplate.afterrender = function(node){console.log(node)};
-	tableTeplate.render(tableData);
-</script>
+    <script src="simplite.js"></script>
+    <script>
+                    var tableData = {
+                        thead : {
+                            tr : [ 'ID', '姓名', '年龄' ]
+                        },
+                        tbody : {
+                            tr : [ [ '1', '张三', '20' ], [ '2', '张三', '30' ],
+                                    [ '3', '张三', '24' ], [ '4', '张三', '27' ],
+                                    [ '5', '张三', '21' ], [ '6', '张三', '23' ],
+                                    [ '7', '张三', '22' ], [ '8', '张三', '26' ] ]
+                        }
+                    }
+                    var tableTeplate = new Simplite({
+                        target : 'tableDiv',
+                        template : 'tableTeplate'
+                    });
+                    tableTeplate.beforerender = function(data) {
+                        console.log(data)
+                    };
+                    tableTeplate.afterrender = function(node) {
+                        console.log(node)
+                    };
+                    tableTeplate.render(tableData);
+                </script>
 </body>
 </html>
