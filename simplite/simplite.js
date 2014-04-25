@@ -89,6 +89,14 @@ var Simplite = function() {
         return segment.split(closeTag);
     };
     /**
+     * 是否逻辑标签和属性标签使用一套
+     * （注意：针对部分一致的标签可能会造成解析问题）
+     */
+    var isSameTag = function () {
+        return Simplite.attrOpenTag === Simplite.logicOpenTag
+            && Simplite.attrCloseTag === Simplite.logicCloseTag
+    };
+    /**
      * 自定义属性标签处理器
      * @private param {string} attr 属性
      * @private param {string} html 没有属性的html片段
@@ -116,30 +124,31 @@ var Simplite = function() {
      */
     var logicHandler = function (js, html) {
         var out = '';
-        if (/^=\s*(.)/.test(js)) { // 是否是获取数据
-            if (RegExp.$1 === '#') { // 此数据需要html转义
-                js = 'out += Simplite.escapeHTML(' + js.substr(2) + ');';
-            } else {
-                js = 'out += ' + js.substr(1) + ';';
+        if (js) {
+            // 处理子模板，未处理xxx.include情况
+            js = js.replace(/(\W)?(include\s*\(([^\)]+)\))/g, function(all,
+                    pre, include, args) {
+                if (args.indexOf(',') < 0) { // 不应该有第一个字符为“,”的情况。
+                    args = args + ',_this';
+                }
+                return (pre || '') + 'out += Simplite.include(' + args + ')';
+            });
+            if (/[^\{;]\s*$/.test(js)) {
+                js += '\n'; // 为没有分号的情况添加换行，利用浏览器解析token
             }
-        }
-        // 处理子模板，未处理xxx.include情况
-        js = js.replace(/(\W)?(include\s*\(([^\)]+)\))/g, function(all,
-                pre, include, args) {
-            if (args.indexOf(',') < 0) { // 不应该有第一个字符为“,”的情况。
-                args = args + ',_this';
+            if (isSameTag()) {
+                if (/^=\s*(.)/.test(js)) { // 是否是获取数据
+                    if (RegExp.$1 === '#') { // 此数据需要html转义
+                        js = 'out += Simplite.escapeHTML(' + js.substr(2) + ');';
+                    } else {
+                        js = 'out += ' + js.substr(1) + ';';
+                    }
+                }
             }
-            return (pre || '') + 'out += Simplite.include(' + args + ')';
-        });
-        if (/[^\{;]\s*$/.test(js)) {
-            js += '\n'; // 为没有分号的情况添加换行，利用浏览器解析token
+            out += js;
         }
-        out += js;
-        // 处理自定义属性标签
         if (html) {
-            if (Simplite.attrOpenTag !== Simplite.logicOpenTag
-                && Simplite.attrCloseTag !== Simplite.logicCloseTag
-            ) {
+            if (!isSameTag()) {// 处理自定义属性标签
                 out += parse2Block(html, Simplite.attrOpenTag,
                     Simplite.attrCloseTag, customAttrHandler);
             } else {
